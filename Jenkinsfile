@@ -1,48 +1,23 @@
-pipeline {
-    agent any
+# Create EFS Filesystem
+resource "aws_efs_file_system" "jenkins_efs" {
+  creation_token   = "jenkins-efs-token"
+  performance_mode = "generalPurpose"
+  throughput_mode  = "bursting"
+  
+  tags = {
+    Name = "jenkins-efs"
+  }
+}
 
-    parameters {
-        choice(
-            name: 'ACTION',
-            choices: ['plan', 'apply'],
-            description: 'Select the action to perform'
-        )
-        string(
-            name: 'BRANCH',
-            defaultValue: 'main',
-            description: 'Enter the branch name to checkout'
-        )
-    }
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scmGit(branches: [[name: '*/${BRANCH}']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Prasad3571/Terraform-Automation.git']])
-            }
-        }
-    
-        stage ("terraform init") {
-            steps {
-                sh ("terraform init -reconfigure") 
-            }
-        }
+# Create EFS Mount Target
+resource "aws_efs_mount_target" "jenkins_efs_mt" {
+  file_system_id      = aws_efs_file_system.jenkins_efs.id
+  subnet_id           = aws_subnet.main.id
+  security_groups     = [aws_security_group.jenkins-sg-2022.id]
+}
 
-        stage ("Action") {
-            steps {
-                script {
-                    switch (params.ACTION) {
-                        case 'plan':
-                            echo 'Executing Plan...'
-                            sh "terraform plan"
-                            break
-                        case 'apply':
-                            echo 'Executing Apply...'
-                            sh "terraform apply --auto-approve"
-                            break
-                        default:
-                            error 'Unknown action'
-                    }
-                }
-            }
-        }
-    }
+# Output EFS DNS name
+output "efs_dns_name" {
+  description = "The DNS name of the EFS file system"
+  value       = aws_efs_file_system.jenkins_efs.dns_name
 }
