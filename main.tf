@@ -46,7 +46,7 @@ resource "aws_instance" "myFirstInstance" {
   ami           = var.ami_id
   key_name = var.key_name
   instance_type = var.instance_type
-  vpc_security_group_ids = [aws_security_group.jenkins-sgroup-dec-2021.id]
+  vpc_security_group_ids = var.security_group_id != "" ? [var.security_group_id] : [aws_security_group.jenkins-sgroup-dec-2021.id]
 
   # Set root volume size to 20 GB
   root_block_device {
@@ -73,7 +73,7 @@ resource "aws_instance" "mySecondInstance" {
   ami           = var.ami_id
   key_name = var.key_name
   instance_type = var.instance_type
-  vpc_security_group_ids = [aws_security_group.jenkins-sgroup-dec-2021.id]
+  vpc_security_group_ids = var.security_group_id != "" ? [var.security_group_id] : [aws_security_group.jenkins-sgroup-dec-2021.id]
 
   # Set root volume size to 20 GB
   root_block_device {

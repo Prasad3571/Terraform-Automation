@@ -46,6 +46,12 @@ variable "git_branch" {
     description = "Git branch name to checkout"
 }
 
+variable "security_group_id" {
+    type        = string
+    description = "(Optional) Use an existing security group ID instead of creating a new one. Leave empty to create the group."
+    default     = ""
+}
+
 variable "tags" {
     type        = map
     description = "(Optional) A mapping of tags to assign to the bucket."
