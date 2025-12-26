@@ -41,6 +41,11 @@ variable "bucket_prefix" {
     description = "(required since we are not using 'bucket') Creates a unique bucket name beginning with the specified prefix"
     default     = "my-bucket-770980"
 }
+variable "git_branch" {
+    type        = string
+    description = "Git branch name to checkout"
+}
+
 variable "tags" {
     type        = map
     description = "(Optional) A mapping of tags to assign to the bucket."
